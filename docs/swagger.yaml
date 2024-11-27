@@ -1,0 +1,203 @@
+basePath: /songs
+definitions:
+  models.Song:
+    properties:
+      group:
+        example: Muse
+        type: string
+      id:
+        type: string
+      link:
+        example: https://www.youtube.com/watch?v=N-_mHedypEU
+        type: string
+      releaseDate:
+        example: Oh baby don't you know I suffer?
+        type: string
+      song:
+        example: Supermassive Black Hole
+        type: string
+      text:
+        example: 19.06.2006
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is an example of a server for managing songs as a test task.
+  title: Music info API
+  version: "1.0"
+paths:
+  /songs:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Получение списка из 20 песен упорядоченного по названию с пагинацией.
+        Есть возможность филтрации по дате релиза, названию группы, названию песни, а также возможность изменения количества песен на странице.
+      parameters:
+      - description: Group
+        in: query
+        name: group
+        type: string
+      - description: Title
+        in: query
+        name: title
+        type: string
+      - description: Release Date
+        in: query
+        name: releaseDate
+        type: string
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of songs
+          schema:
+            items:
+              $ref: '#/definitions/models.Song'
+            type: array
+        "400":
+          description: Bad request" SchemaExample({"code":400, "message":"Bad request"})
+          schema:
+            type: string
+        "500":
+          description: Internal server error" SchemaExample({"code":500, "message":"Internal
+            server error"})
+          schema:
+            type: string
+      summary: Получение списка песен
+      tags:
+      - API Manage songs
+  /songs/{songId}/editsong:
+    put:
+      consumes:
+      - application/json
+      description: Редактирование параметров песни по Id. Все поля песни являются
+        редактируемыми.
+      parameters:
+      - description: Song ID
+        in: path
+        name: songId
+        required: true
+        type: string
+      - description: Song details to edit
+        in: body
+        name: song
+        schema:
+          $ref: '#/definitions/models.Song'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message"               SchemaExample({"code":200, "message":"The
+            song has been successfully edited."})
+          schema:
+            type: string
+        "400":
+          description: Bad request"                   SchemaExample({"code":400, "message":"Bad
+            request"})
+          schema:
+            type: string
+        "404":
+          description: Song not found"                SchemaExample({"code":404, "message":"Song
+            not found"})
+          schema:
+            type: string
+        "500":
+          description: Internal server error"         SchemaExample({"code":500, "message":"Internal
+            server error."})
+          schema:
+            type: string
+      summary: Редактирование песни
+      tags:
+      - API Manage songs
+  /songs/{songId}/textsong:
+    get:
+      consumes:
+      - application/json
+      description: Получение текста песни по ID с пагинацией по куплетам.
+      parameters:
+      - description: Song ID
+        in: path
+        name: songId
+        required: true
+        type: string
+      - default: 10
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Song lyrics text"         SchemaExample({"code":200, "message":"Textttt
+            of song"})
+          schema:
+            items:
+              type: string
+            type: array
+        "404":
+          description: Song not found"           SchemaExample({"code":404, "message":"Song
+            not found"})
+          schema:
+            type: string
+        "500":
+          description: Internal server error"    SchemaExample({"code":500, "message":"Internal
+            server error."})
+          schema:
+            type: string
+      summary: Получение текста песни
+      tags:
+      - API Manage songs
+  /songs/newsong:
+    post:
+      consumes:
+      - application/json
+      description: Добавление песни в библиотеку. При добавлении записываются только
+        название песни и группы. Далее происходит запрос в сторонний сервис и после
+        песня добавляется в библиотеку.
+      parameters:
+      - description: Song details to create
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.Song'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "Success message\"                  \tSchemaExample({\"code\":200,
+            \"message\":\"The song has been added to the library.\"})"
+          schema:
+            type: string
+        "400":
+          description: Bad request or missing required fields" SchemaExample({"code":400,
+            "message":"Bad request"})
+          schema:
+            type: string
+        "500":
+          description: Internal server error"            SchemaExample({"code":500,
+            "message":"Internal server error."})
+          schema:
+            type: string
+      summary: Добавление песни
+      tags:
+      - API Manage songs
+swagger: "2.0"
